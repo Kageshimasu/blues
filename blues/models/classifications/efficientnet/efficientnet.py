@@ -68,6 +68,6 @@ class EfficientNet(BaseModel):
         config = {}
         config['model_name'] = 'EfficientNet'
         config['num_classes'] = self._num_classes
-        config['optimizer'] = self._optimizer
+        config['optimizer'] = self._optimizer.__class__.__name__
         config['network'] = self._network
         return config

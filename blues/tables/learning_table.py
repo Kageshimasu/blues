@@ -1,15 +1,15 @@
 import re
 
 
-class LearningTable:
+class TrainingTable:
 
     def __init__(self, learning_dir: dir):
         """
         :param learning_dir:
         {
-        'fold1': [model1(), model2()...]
-        'fold2': [model1(), model2()...]
-        'fold3': [model1(), model2()...]
+        'fold1': model1()
+        'fold2': model2()
+        'fold3': model3()
         }
         """
         if len(learning_dir) == 0:

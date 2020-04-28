@@ -62,5 +62,5 @@ class MobileNetV2(BaseModel):
         config = {}
         config['model_name'] = 'MobileNetV2'
         config['num_classes'] = self._num_classes
-        config['optimizer'] = self._optimizer
+        config['optimizer'] = self._optimizer.__class__.__name__
         return config

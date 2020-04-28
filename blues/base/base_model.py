@@ -4,15 +4,15 @@ from abc import ABCMeta, abstractmethod
 class BaseModel(metaclass=ABCMeta):
 
     @abstractmethod
-    def fit(self, train_data, test_data):
+    def fit(self, inputs, teachers):
         pass
 
     @abstractmethod
-    def predict(self, data):
+    def predict(self, inputs):
         pass
 
     @abstractmethod
-    def save_weight(self, save_path):
+    def save_weight(self, save_path: str):
         pass
 
     @abstractmethod

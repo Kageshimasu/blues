@@ -108,5 +108,5 @@ class SimpleNet(BaseModel):
         config = {}
         config['model_name'] = 'SimpleNet'
         config['num_classes'] = self._num_classes
-        config['optimizer'] = self._optimizer
+        config['optimizer'] = self._optimizer.__class__.__name__
         return config

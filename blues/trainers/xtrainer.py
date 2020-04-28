@@ -3,7 +3,7 @@ from collections import OrderedDict
 import os
 import json
 
-from blues.tables.learning_table import LearningTable
+from blues.tables.learning_table import TrainingTable
 from ..base.base_trainer import BaseTrainer
 from ..base.base_dataset import BaseDataset
 from ..base.base_kfolder import BaseKFolder
@@ -15,7 +15,7 @@ class XTrainer(BaseTrainer):
     _CALL_FUNC_PER = 10
 
     def __init__(
-            self, learning_table: LearningTable, train_dataset: BaseDataset, num_epochs: int, result_path: str,
+            self, learning_table: TrainingTable, train_dataset: BaseDataset, num_epochs: int, result_path: str,
             metric_function: callable, test_dataset: BaseDataset = None, callback_functions: list = None,
             kfolder: BaseKFolder.__class__ = KFolder, evaluate=True):
         super().__init__(learning_table, train_dataset, result_path, num_epochs, test_dataset, callback_functions)
@@ -31,11 +31,12 @@ class XTrainer(BaseTrainer):
 
         for fold_num, model in self._learning_table:
             print('FOLD: {}, MODEL: {} LOADED'.format(fold_num, model))
-            config['fold{}'.format(fold_num)] = model.get_model_config()
+            config[fold_num] = model.get_model_config()
             models.append(model)
 
+        print(config)
         with open(os.path.join(self._result_path, 'config.json'), 'w') as f:
-            json.dump(config, f, indent=4)
+            json.dump(config, f)
 
         kf = self._kf(self._train_dataset, n_splits=len(self._learning_table))
         for k, (train_dataset, valid_dataset) in enumerate(kf):
@@ -74,9 +75,6 @@ class XTrainer(BaseTrainer):
                 if self._evaluate:
                     for data in valid_dataset:
                         inputs, teachers = data.get_inputs(), data.get_teachers()
-                        import cv2
-                        cv2.imshow('valid', inputs[0].transpose(1, 2, 0))
-                        cv2.waitKey(1)
                         preds = models[k].predict(inputs)
                         metric = self._metric_function(teachers, preds)
                         eval_metrics.append(metric)

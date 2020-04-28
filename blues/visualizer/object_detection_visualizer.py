@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 
-def show_image(
+def show_image_for_object_detection(
         images, pred,
         teacher=None, pred_color=(0, 0, 255), teacher_color=(0, 255, 0), wait_time=1, threshold=0.2, max_detections=50, idx=0):
     image = images[idx].transpose(1, 2, 0)
