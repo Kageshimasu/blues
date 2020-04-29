@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import torch
 
 from ..base.base_dataset import BaseDataset
 from blues.data_augmentations.data_augmentor import DataAugmentor
@@ -11,9 +12,11 @@ class ClassificationDataset(BaseDataset):
     def __init__(self, inputs: list, teachers: list, batch_size: int,
                  transformers: list = None, augmentors: DataAugmentor = None):
         """
-        :param inputs: images path list
-        :param teachers: teachers list
+        :param inputs:
+        :param teachers:
         :param batch_size:
+        :param transformers:
+        :param augmentors:
         """
         super().__init__(inputs, teachers, batch_size, transformers, augmentors)
 

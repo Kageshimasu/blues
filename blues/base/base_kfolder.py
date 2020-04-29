@@ -23,7 +23,10 @@ class BaseKFolder(metaclass=ABCMeta):
         self._n_samples = len(self._dataset) // n_splits
 
     @abstractmethod
-    def __next__(self):
+    def __next__(self) -> tuple:
+        """
+        :return: (train_dataset, valid_dataset)
+        """
         pass
 
     def __iter__(self):

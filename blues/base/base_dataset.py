@@ -35,17 +35,17 @@ class BaseDataset(metaclass=ABCMeta):
     def __iter__(self):
         return self
 
-    def get_inputs(self):
+    def get_inputs(self) -> list:
         return self._inputs
 
-    def get_teachers(self):
+    def get_teachers(self) -> list:
         return self._teachers
 
-    def get_batch_size(self):
+    def get_batch_size(self) -> int:
         return self._batch_size
 
-    def get_transformers(self):
+    def get_transformers(self) -> list:
         return self._transformers
 
-    def get_augmentors(self):
+    def get_augmentors(self) -> DataAugmentor:
         return self._augmentors

@@ -1,20 +1,23 @@
+import torch
+import numpy as np
+
 from abc import ABCMeta, abstractmethod
 
 
 class BaseModel(metaclass=ABCMeta):
 
     @abstractmethod
-    def fit(self, inputs, teachers):
+    def fit(self, inputs: torch.Tensor, teachers: torch.Tensor) -> float:
         pass
 
     @abstractmethod
-    def predict(self, inputs):
+    def predict(self, inputs: torch.Tensor) -> np.ndarray:
         pass
 
     @abstractmethod
-    def save_weight(self, save_path: str):
+    def save_weight(self, save_path: str) -> object:
         pass
 
     @abstractmethod
-    def get_model_config(self):
+    def get_model_config(self) -> dict:
         pass

@@ -24,8 +24,6 @@ class MobileNetV2(BaseModel):
 
     def fit(self, inputs, teachers):
         self._model.train()
-        inputs = torch.Tensor(inputs).cuda().float()
-        teachers = torch.Tensor(teachers).cuda().long()
         output = self._model(inputs)
         loss = self._criterion(output, teachers)
         self._optimizer.zero_grad()
@@ -36,7 +34,6 @@ class MobileNetV2(BaseModel):
     def predict(self, inputs):
         self._model.eval()
         with torch.no_grad():
-            inputs = torch.Tensor(inputs).cuda().float()
             output = nn.Softmax(dim=1)(self._model(inputs)[:, :self._num_classes])
             pred_ids = output.cpu().numpy()
         return pred_ids

@@ -18,6 +18,18 @@ class XTrainer(BaseTrainer):
             self, learning_table: TrainingTable, train_dataset: BaseDataset, num_epochs: int, result_path: str,
             metric_function: callable, test_dataset: BaseDataset = None, callback_functions: list = None,
             kfolder: BaseKFolder.__class__ = KFolder, evaluate=True):
+        """
+        XTrainer is a module to train models by cross validation.
+        :param learning_table:
+        :param train_dataset:
+        :param num_epochs:
+        :param result_path:
+        :param metric_function:
+        :param test_dataset:
+        :param callback_functions:
+        :param kfolder:
+        :param evaluate:
+        """
         super().__init__(learning_table, train_dataset, result_path, num_epochs, test_dataset, callback_functions)
         self._kf = kfolder
         self._metric_function = metric_function
@@ -25,6 +37,10 @@ class XTrainer(BaseTrainer):
         self._evaluate = evaluate
 
     def run(self):
+        """
+        start learning
+        :return:
+        """
         models = []
         config = {}
         os.makedirs(self._result_path, exist_ok=False)
@@ -50,16 +66,17 @@ class XTrainer(BaseTrainer):
                     train_metrics = []
 
                     for iter, data in enumerate(train_dataset):
-                        inputs, teachers = data.get_inputs(), data.get_teachers()
-                        loss = models[k].fit(inputs, teachers)
-                        preds = models[k].predict(inputs)
-                        metric = self._metric_function(teachers, preds)
+                        inputs_numpy, teachers_numpy = data.get_inputs_on_numpy(), data.get_teachers_on_numpy()
+                        inputs_tensor, teachers_tensor = data.get_inputs_on_torch(), data.get_teachers_on_torch()
+                        loss = models[k].fit(inputs_tensor, teachers_tensor)
+                        preds = models[k].predict(inputs_tensor)
+                        metric = self._metric_function(teachers_numpy, preds)
                         losses.append(loss)
                         train_metrics.append(metric)
                         if iter % self._CALL_FUNC_PER == 0:
                             if self._callback_functions is not None:
                                 for callback in self._callback_functions:
-                                    callback(inputs, preds, teachers)
+                                    callback(inputs_numpy, preds, teachers_numpy)
 
                         iter_bar.set_description('ITERATOR')
                         iter_bar.set_postfix(OrderedDict(
@@ -74,9 +91,10 @@ class XTrainer(BaseTrainer):
 
                 if self._evaluate:
                     for data in valid_dataset:
-                        inputs, teachers = data.get_inputs(), data.get_teachers()
-                        preds = models[k].predict(inputs)
-                        metric = self._metric_function(teachers, preds)
+                        inputs_numpy, teachers_numpy = data.get_inputs_on_numpy(), data.get_teachers_on_numpy()
+                        inputs_torch = data.get_inputs_on_torch()
+                        preds = models[k].predict(inputs_torch)
+                        metric = self._metric_function(teachers_numpy, preds)
                         eval_metrics.append(metric)
                     valid_mean_metric = sum(eval_metrics) / len(eval_metrics)
                     self._metric_list.append(valid_mean_metric)

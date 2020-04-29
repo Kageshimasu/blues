@@ -1,3 +1,4 @@
+import numpy as np
 from abc import ABCMeta, abstractmethod
 
 
@@ -10,10 +11,10 @@ class BaseResizer(metaclass=ABCMeta):
         self._out_size = out_size
 
     @abstractmethod
-    def __call__(self, inputs, teachers):
+    def __call__(self, inputs, teachers) -> tuple:
         """
-        :param inputs: tensor
-        :param teachers: tensor
-        :return:
+        :param inputs:
+        :param teachers:
+        :return: (inputs, teachers)
         """
         pass

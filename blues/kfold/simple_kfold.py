@@ -5,6 +5,11 @@ from ..base.base_kfolder import BaseKFolder
 class KFolder(BaseKFolder):
 
     def __init__(self, dataset: BaseDataset, n_splits: int = 3):
+        """
+        KFolder is a folder which assumes that all the data was sampled from the same distribution
+        :param dataset:
+        :param n_splits:
+        """
         super().__init__(dataset, n_splits)
 
     def __iter__(self):
