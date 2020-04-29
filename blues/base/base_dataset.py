@@ -1,12 +1,19 @@
 from abc import ABCMeta, abstractmethod
 from ..common.data import Data
-from .base_data_augmentor import BaseDataAgumentor
+from blues.data_augmentations.data_augmentor import DataAugmentor
 
 
 class BaseDataset(metaclass=ABCMeta):
 
     def __init__(self, inputs: list, teachers: list, batch_size: int,
-                 transformers: list = [], augmentors: BaseDataAgumentor = None):
+                 transformers: list = [], augmentors: DataAugmentor = None):
+        """
+        :param inputs: image path list
+        :param teachers: ndarray list
+        :param batch_size: batch size
+        :param transformers: function list to transform the inputs and teachers
+        :param augmentors:
+        """
         if len(inputs) != len(teachers):
             raise ValueError('the number of the inputs and that of the teachers did not match')
         if len(inputs) < batch_size:

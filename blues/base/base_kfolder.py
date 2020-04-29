@@ -5,6 +5,12 @@ from .base_dataset import BaseDataset
 class BaseKFolder(metaclass=ABCMeta):
 
     def __init__(self, dataset: BaseDataset, n_splits: int = 3):
+        """
+        :param dataset: base dataset
+        :param n_splits:
+        """
+        if n_splits <= 1:
+            raise ValueError('The number of splits must be more than 1')
         self._i = 0
         self._dataset = dataset
         self._dataset_class = dataset.__class__

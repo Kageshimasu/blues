@@ -12,7 +12,7 @@ def iou(inputs, teachers):
     overlaps: (N, K) ndarray of overlap between boxes and query_boxes
     """
     ious = []
-
+    print(inputs.shape)
     scores, boxes, labels = inputs
     if len(boxes.shape) != 3:
         return 0

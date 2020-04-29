@@ -91,3 +91,12 @@ class EfficientDetector(BaseModel):
         print('Num classes: {}'.format(params.num_class))
         print('Network: {}'.format(params.network))
         self._model.load_state_dict(checkpoint['state_dict'])
+
+    def get_model_config(self):
+        config = {
+            'model_name': 'EfficientDetector',
+            'num_class': self._num_classes,
+            'network': self._network,
+            'state_dict': self._model.state_dict().__class__.__name__
+        }
+        return config

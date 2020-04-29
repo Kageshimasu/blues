@@ -2,14 +2,14 @@ import cv2
 import numpy as np
 
 from ..base.base_dataset import BaseDataset
-from ..base.base_data_augmentor import BaseDataAgumentor
+from blues.data_augmentations.data_augmentor import DataAugmentor
 from ..common.data import Data
 
 
 class ObjectDetectionDataset(BaseDataset):
 
     def __init__(self, inputs: list, teachers: list, batch_size: int,
-                 transformers: list = None, augmentors: BaseDataAgumentor = None):
+                 transformers: list = None, augmentors: DataAugmentor = None):
         """
         :param inputs: images path list
         :param teachers: teachers list
