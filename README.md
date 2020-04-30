@@ -15,7 +15,7 @@ which can be evaluated or inferred using cross-validation.
 ## Features
 * Optimized for high performance
 * Easy to apply cross validation
-* Easy to apply augmentations experiment
+* Easy to conduct augmentations experiment
 
 <a name="installation"/>
 
