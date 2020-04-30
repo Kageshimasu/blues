@@ -76,7 +76,6 @@ seq = iaa.Sequential([
     iaa.GaussianBlur(sigma=(0, 3.0)),
     iaa.Cutout(),
     iaa.Multiply()
-    # iaa.Fliplr(),
 ])
 augmentor = blues.augmentors.ClassificationDataAugmentor(seq)
 
