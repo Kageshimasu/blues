@@ -16,6 +16,13 @@ which can be evaluated or inferred using cross-validation.
 * Optimized for high performance
 * Easy to apply cross validation
 * Easy to conduct augmentations experiment
+* Easy to train the following sota models
+  - EfficinetNet
+  - MobileNet v2 or v3
+  - ResNext
+  - WideResNet
+  - EfficientDet
+  - Shelfnet
 
 <a name="installation"/>
 
