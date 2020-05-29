@@ -6,3 +6,4 @@ from . import predictors
 from . import visualizer
 from . import resizer
 from . import metrics
+from . import augmentors

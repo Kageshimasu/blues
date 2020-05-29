@@ -1,9 +1,10 @@
+from typing import Dict
 from ..base.base_model import BaseModel
 
 
 class PredictingTable:
 
-    def __init__(self, predicting_table: dir):
+    def __init__(self, predicting_table: Dict[BaseModel, float]):
         """
         :param predicting_table:
         {

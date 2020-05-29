@@ -6,60 +6,43 @@ import torchvision.models as models
 
 from ....base.base_model import BaseModel
 
-
-class Flatten(nn.Module):
-    def forward(self, x):
-        # print(x.view(x.size(0), -1).shape)
-        return x.view(x.size(0), -1)
-
-
-class SimpleCNNBlock(nn.Module):
-
-    def __init__(self, in_c, out_c, k_size):
-        super(SimpleCNNBlock, self).__init__()
-        self._conv = nn.Conv2d(in_c, out_c, k_size)
-        self._relu = nn.ReLU()
-        # self._bn = nn.BatchNorm2d(out_c)
-
-    def forward(self, x):
-        return self._relu(self._conv(x))
+# self.conv1 = nn.Conv2d(3, 32, 5)
+# self.conv2 = nn.Conv2d(32, 32, 5)
+# self.pool = nn.MaxPool2d(2, 2)
+# self.conv3 = nn.Conv2d(32, 64, 5)
+# self.conv4 = nn.Conv2d(64, 64, 5)
+# self.fc2 = nn.Linear(256, 256)
+# self.fc3 = nn.Linear(256, num_classes)
 
 
-class SimpleDenseBlock(nn.Module):
-
-    def __init__(self, in_c, out_c, activation=nn.ReLU):
-        super(SimpleDenseBlock, self).__init__()
-        # self._bn = nn.BatchNorm1d(in_c)
-        self._fn = nn.Linear(in_c, out_c)
-        self._relu = activation()
+class NetModule(nn.Module):
+    def __init__(self, num_classes):
+        super(NetModule, self).__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.fc1 = nn.Linear(86528, 120)
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, num_classes)
 
     def forward(self, x):
-        return self._relu(self._fn(x))
-
-
-model = torch.nn.Sequential(
-            SimpleCNNBlock(3, 32, 3),
-            SimpleCNNBlock(32, 32, 3),
-            SimpleCNNBlock(32, 32, 5),
-            # nn.Dropout2d(0.4),
-            SimpleCNNBlock(32, 64, 3),
-            SimpleCNNBlock(64, 64, 3),
-            SimpleCNNBlock(64, 64, 5),
-            Flatten(),
-            SimpleDenseBlock(147456, 1024),
-            SimpleDenseBlock(1024, 512),
-            SimpleDenseBlock(512, 10, activation=nn.Softmax)
-        )
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = x.view(32, -1)
+        print(x.shape)
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
 
 
 class SimpleNet(BaseModel):
 
-    def __init__(self, num_classes, lr=1e-4):
+    def __init__(self, num_classes, lr=1e-3, momentum=0.9):
         super().__init__()
         self._num_classes = num_classes
-        self._model = models.mobilenet_v2(pretrained=False, num_classes=num_classes)
-        self._optimizer = optim.Adam(self._model.parameters(),
-                                     lr)  # optim.SGD(self._model.parameters(), lr=0.1, momentum=0.9)
+        self._model = NetModule(num_classes)
+        self._optimizer = optim.SGD(self._model.parameters(), lr=lr, momentum=momentum)
         self._criterion = torch.nn.CrossEntropyLoss()
         if torch.cuda.is_available():
             self._model.cuda()

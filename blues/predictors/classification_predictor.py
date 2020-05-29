@@ -19,7 +19,7 @@ class ClassificationPredictor(BasePredictor):
             preds_dir[class_name] = []
 
         for data in tqdm(self._pred_dataset):
-            inputs = data.get_inputs_on_numpy()
+            inputs = data.get_inputs_on_torch()
             file_names = data.get_file_names()
             total_acc = 0
             total_preds = None

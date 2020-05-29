@@ -12,13 +12,15 @@ class BaseKFolder(metaclass=ABCMeta):
         if n_splits <= 1:
             raise ValueError('The number of splits must be more than 1')
         self._i = 0
+        self._k = 0
         self._dataset = dataset
         self._dataset_class = dataset.__class__
         self._inputs = dataset.get_inputs()
         self._teachers = dataset.get_teachers()
         self._batch_size = dataset.get_batch_size()
+        self._resizer = dataset.get_resizer()
         self._transformers = dataset.get_transformers()
-        self._augmentors = dataset.get_augmentors()
+        self._augmentor = dataset.get_augmentor()
         self._n_splits = n_splits
         self._n_samples = len(self._dataset) // n_splits
 

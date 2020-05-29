@@ -1,2 +1,1 @@
 from .classification_visualizer import show_image_for_classification
-from .object_detection_visualizer import show_image_for_object_detection

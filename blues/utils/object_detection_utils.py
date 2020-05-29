@@ -1,7 +1,9 @@
 import cv2
+import numpy as np
+from typing import Tuple
 
 
-def resize_bbox(bbox, in_size, out_size):
+def resize_bbox(bbox: np.ndarray, in_size: Tuple[int, int], out_size: Tuple[int, int]):
     bbox = bbox.copy()
     y_scale = float(out_size[0]) / in_size[0]
     x_scale = float(out_size[1]) / in_size[1]

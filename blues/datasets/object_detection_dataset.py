@@ -2,37 +2,40 @@ import cv2
 import numpy as np
 
 from ..base.base_dataset import BaseDataset
-from blues.data_augmentations.data_augmentor import DataAugmentor
+from blues.base.base_data_augmentor import DataAugmentor
+from ..base.base_resizer import BaseResizer
 from ..common.data import Data
 
 
 class ObjectDetectionDataset(BaseDataset):
 
     def __init__(self, inputs: list, teachers: list, batch_size: int,
-                 transformers: list = None, augmentors: DataAugmentor = None):
+                 resizer: BaseResizer, transformers: list = None, augmentor: DataAugmentor = None):
         """
-        :param inputs: images path list
-        :param teachers: teachers list
+        :param inputs:
+        :param teachers:
         :param batch_size:
+        :param transformers:
+        :param augmentor:
         """
-        super().__init__(inputs, teachers, batch_size, transformers, augmentors)
+        super().__init__(inputs, teachers, batch_size, resizer, transformers, augmentor)
 
     def __next__(self):
         if self._i >= len(self):
             self._i = 0
             raise StopIteration()
+
         inputs_path = self._inputs[self._i:self._i + self._batch_size]
-        inputs = np.array([cv2.imread(image_path) for image_path in inputs_path])
-        teachers = self._teachers[self._i:self._i + self._batch_size]
+        teachers = np.array(self._teachers[self._i:self._i + self._batch_size])
+        inputs, teachers = self._resizer(inputs_path, teachers)
         file_names = inputs_path
-        self._i += self._batch_size
+
+        if self._augmentor is not None:
+            inputs, teachers = self._augmentor(inputs, teachers)
 
         if self._transformers is not None:
             for transformer in self._transformers:
                 inputs, teachers = transformer(inputs, teachers)
 
-        if self._augmentors is not None:
-            for augmentor in self._augmentors:
-                inputs, teachers = augmentor(inputs, teachers)
-
+        self._i += self._batch_size
         return Data(inputs, teachers, file_names)

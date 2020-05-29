@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from .base_dataset import BaseDataset
-from blues.tables.learning_table import TrainingTable
+from blues.tables.training_table import TrainingTable
 
 
 class BaseTrainer(metaclass=ABCMeta):
@@ -15,6 +15,8 @@ class BaseTrainer(metaclass=ABCMeta):
         :param test_dataset:
         :param callback_functions:
         """
+        if len(train_dataset) // len(learning_table) < train_dataset.get_batch_size():
+            raise ValueError('the batch size is too large for the number of the inputs')
         self._learning_table = learning_table
         self._train_dataset = train_dataset
         self._result_path = result_path

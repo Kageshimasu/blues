@@ -16,7 +16,7 @@ class KFolder(BaseKFolder):
         return self
 
     def __next__(self):
-        if self._i >= len(self._dataset) - 1:
+        if self._n_splits <= self._k:
             raise StopIteration()
 
         train_inputs = [
@@ -29,8 +29,10 @@ class KFolder(BaseKFolder):
         test_teachers = self._teachers[self._i:self._i + self._n_samples]
 
         train_dataset = self._dataset_class(
-            train_inputs, train_teachers, self._batch_size, self._transformers, self._augmentors)
+            train_inputs, train_teachers, self._batch_size, self._resizer, self._transformers, self._augmentor)
         valid_dataset = self._dataset_class(
-            test_inputs, test_teachers, self._batch_size, self._transformers, self._augmentors)
+            test_inputs, test_teachers, self._batch_size, self._resizer, self._transformers, None)
+
         self._i += self._n_samples
+        self._k += 1
         return train_dataset, valid_dataset

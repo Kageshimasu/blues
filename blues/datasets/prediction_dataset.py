@@ -19,13 +19,13 @@ class PredictionDataset(BaseDataset):
             self._i = 0
             raise StopIteration()
         inputs_path = self._inputs[self._i:self._i + self._batch_size]
-        inputs = np.array([cv2.imread(image_path) for image_path in inputs_path])
         teachers = np.array(self._teachers[self._i:self._i + self._batch_size])
+        inputs, teachers = self._resizer(inputs_path, teachers)
         file_names = inputs_path
-        self._i += self._batch_size
 
         if self._transformers is not None:
             for transformer in self._transformers:
                 inputs, teachers = transformer(inputs, teachers)
 
+        self._i += self._batch_size
         return Data(inputs, teachers, file_names)
