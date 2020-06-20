@@ -1,7 +1,5 @@
 import torch.optim as optim
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 import torchvision.models as models
 
 from ....base.base_model import BaseModel
@@ -41,8 +39,8 @@ class ResNext(BaseModel):
     def predict(self, inputs):
         self._model.eval()
         with torch.no_grad():
-            output = nn.Softmax(dim=1)(self._model(inputs)[:, :self._num_classes])
-            pred_ids = output.cpu().numpy()
+            output = self._model(inputs)[:, :self._num_classes]
+            pred_ids = output.cpu()
         return pred_ids
 
     def save_weight(self, save_path):

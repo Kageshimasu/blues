@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 from ..base.base_dataset import BaseDataset
-from blues.base.base_data_augmentor import DataAugmentor
+from ..base.base_data_augmentor import DataAugmentor
 from ..base.base_resizer import BaseResizer
 from ..common.data import Data
 

@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from .base_dataset import BaseDataset
-from blues.tables.training_table import TrainingTable
+from ..tables.training_table import TrainingTable
 
 
 class BaseTrainer(metaclass=ABCMeta):

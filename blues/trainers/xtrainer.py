@@ -5,7 +5,7 @@ import json
 from typing import List, Dict
 import matplotlib.pyplot as plt
 
-from blues.tables.training_table import TrainingTable
+from ..tables.training_table import TrainingTable
 from ..base.base_trainer import BaseTrainer
 from ..base.base_dataset import BaseDataset
 from ..base.base_kfolder import BaseKFolder

@@ -4,7 +4,9 @@ import torch.nn as nn
 import numpy as np
 
 from ....base.base_model import BaseModel
-from .efficientnet_lib.model import EfficientNetPredictor
+# from .efficientnet_lib.model import EfficientNetPredictor
+# from efficientnet_pytorch import EfficientNet
+from .efficientnet_lib.lib import Model
 
 
 class EfficientNet(BaseModel):
@@ -12,7 +14,7 @@ class EfficientNet(BaseModel):
     def __init__(self, num_classes, network='efficientnet-b0', lr=0.1, momentum=0.9, weight_decay=1e-4):
         super().__init__()
         self._num_classes = num_classes
-        self._model = EfficientNetPredictor.from_name(network, override_params={'num_classes': self._num_classes})
+        self._model = Model.from_pretrained(network)
         self._network = network
         self._optimizer = optim.SGD(
             self._model.parameters(), lr,
@@ -37,8 +39,8 @@ class EfficientNet(BaseModel):
     def predict(self, inputs):
         self._model.eval()
         with torch.no_grad():
-            output = nn.Softmax(dim=1)(self._model(inputs))
-            pred_ids = output.cpu().numpy()
+            output = self._model(inputs)[:, :self._num_classes]
+            pred_ids = output.cpu()
         return pred_ids
 
     def save_weight(self, save_path):

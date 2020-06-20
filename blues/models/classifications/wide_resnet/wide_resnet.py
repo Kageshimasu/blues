@@ -41,8 +41,8 @@ class WideResNet(BaseModel):
     def predict(self, inputs):
         self._model.eval()
         with torch.no_grad():
-            output = nn.Softmax(dim=1)(self._model(inputs)[:, :self._num_classes])
-            pred_ids = output.cpu().numpy()
+            output = self._model(inputs)[:, :self._num_classes]
+            pred_ids = output.cpu()
         return pred_ids
 
     def save_weight(self, save_path):

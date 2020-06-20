@@ -11,7 +11,7 @@ class BaseModel(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def predict(self, inputs: torch.Tensor) -> np.ndarray:
+    def predict(self, inputs: torch.Tensor) -> torch.Tensor:
         pass
 
     @abstractmethod

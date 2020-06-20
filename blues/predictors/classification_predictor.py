@@ -1,8 +1,9 @@
 import pandas as pd
 import os
 from tqdm import tqdm
+import torch.nn as nn
 
-from blues.base.base_predictor import BasePredictor
+from ..base.base_predictor import BasePredictor
 
 
 class ClassificationPredictor(BasePredictor):
@@ -25,7 +26,7 @@ class ClassificationPredictor(BasePredictor):
             total_preds = None
 
             for acc, model in self._predicting_table:
-                preds = model.predict(inputs) * acc
+                preds = nn.Softmax(dim=1)(model.predict(inputs) * acc).numpy()
                 total_acc += acc
                 if total_preds is None:
                     total_preds = preds

@@ -1,8 +1,5 @@
 import torch.optim as optim
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torchvision.models as models
 
 from ....base.base_model import BaseModel
 from .mobilenetv3_lib.model import mobilenetv3
@@ -37,7 +34,7 @@ class MobileNetV3(BaseModel):
         self._model.eval()
         with torch.no_grad():
             output = self._model(inputs)
-            pred_ids = output.cpu().numpy()
+            pred_ids = output.cpu()
         return pred_ids
 
     def save_weight(self, save_path):
