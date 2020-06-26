@@ -34,48 +34,6 @@ UNDER CONSTRUCTION...
 ## Examples
 A standard deep learning situation.
 ```python
-import numpy as np
-import shutil
-import os
-import cv2
-import blues
-import imgaug.augmenters as iaa
-
-
-def transpose_for_pytorch(inputs, teachers):
-    return inputs.transpose(0, 3, 1, 2) / 255, teachers
-
-
-# Define Conditions
-batch_size = 27
-num_classes = 4
-epoch = 5
-result_path = 'outputs'
-width = 128
-height = 128
-data_size = 81
-
-# Make DummyData
-image_root_dir = 'raw'
-os.makedirs(image_root_dir)
-dummy_inputs = []
-dummy_teachers = []
-for i in range(data_size):
-    rand_image = np.random.rand(width, height, 3)
-    image_name = '{}.png'.format(i)
-    image_path = os.path.join(image_root_dir, image_name)
-    cv2.imwrite(image_path, rand_image)
-    dummy_inputs.append(image_path)
-    dummy_teachers.append(np.random.randint(0, num_classes))
-
-# Define Callback Functions if you need
-transformers = [
-    transpose_for_pytorch
-]
-callback_functions = [
-    blues.visualizer.show_image_for_classification
-]
-
 # Define Data Augmentations
 seq = iaa.Sequential([
     iaa.Crop(),
