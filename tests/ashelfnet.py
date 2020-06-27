@@ -42,6 +42,13 @@ COLOR_DICT = {
 }
 
 
+def labels_to_imgs(labels):
+    img = np.zeros((labels.shape[0], labels.shape[1], labels.shape[2], 3))
+    for key in COLOR_DICT.keys():
+        img[labels == key] = COLOR_DICT[key]
+    return img
+
+
 class PilToLabel:
 
     def __init__(self):
@@ -49,7 +56,13 @@ class PilToLabel:
 
     def __call__(self, img):
         targets = np.array(img.convert("RGB"), dtype=np.uint8)
-        return self._voc_label_indices(targets)
+        new_targets = self._voc_label_indices(targets)
+        # print(np.expand_dims(targets, 0).shape)
+        # a = labels_to_imgs(np.expand_dims(targets, 0))
+        # cv2.imshow("test", a[0])
+        # cv2.waitKey(1000)
+        # exit()
+        return new_targets
 
     def _voc_label_indices(self, colormap):
         colormap2label = self._build_colormap2label()
@@ -64,14 +77,6 @@ class PilToLabel:
         for i, colormap in enumerate(VOC_COLORMAP):
             colormap2label[(colormap[0] * 256 + colormap[1]) * 256 + colormap[2]] = i
         return colormap2label
-
-
-def labels_to_imgs(labels):
-    labels = np.argmax(np.array(labels), axis=1)
-    img = np.zeros((labels.shape[0], labels.shape[1], labels.shape[2], 3))
-    for key in COLOR_DICT.keys():
-        img[labels == key] = COLOR_DICT[key]
-    return img
 
 
 def main():
@@ -95,8 +100,7 @@ def main():
     ])
     transform_target = transforms.Compose([
         transforms.Resize((crop_size[0], crop_size[1])),
-        PilToLabel(),
-        transforms.ToTensor()
+        PilToLabel()
     ])
     voc_data = torchvision.datasets.VOCSegmentation(
         './tests/VOCdevkit/', download=True, transform=transform, target_transform=transform_target)
@@ -106,7 +110,7 @@ def main():
     for e in range(epoch):
         for data in dataloader:
             inputs, targets = data
-            if inputs.shape[0] != 16:
+            if inputs.shape[0] != batch_size:
                 continue
             # to cuda
             inputs = inputs.cuda()
@@ -114,15 +118,14 @@ def main():
 
             # fit and pred
             loss = shelfnet.fit(inputs, targets)
-            preds_np = shelfnet.predict(inputs)
+            preds_np = np.argmax(np.array(shelfnet.predict(inputs)), axis=1)
 
             # visualize
-            # inputs_np = inputs.cpu().numpy().transpose(0, 2, 3, 1)
-            # targets_np = labels_to_imgs(targets.cpu().numpy())
+            inputs_np = inputs.cpu().numpy().transpose(0, 2, 3, 1)
+            targets_np = labels_to_imgs(targets.cpu().numpy())
             preds_img = labels_to_imgs(preds_np)
-            # cv2.imshow('input', inputs_np[0])
-            # cv2.imshow('target', targets_np[0])
-            print('a')
+            cv2.imshow('input', inputs_np[0])
+            cv2.imshow('target', targets_np[0])
             cv2.imshow('pred', preds_img[0])
             cv2.waitKey(1)
             print(loss)
