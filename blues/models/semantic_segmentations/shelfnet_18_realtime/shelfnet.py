@@ -20,8 +20,7 @@ class ShelfNet(BaseModel):
                 loss.cuda()
 
     def fit(self, inputs, teachers):
-        teachers = torch.argmax(teachers, dim=1)
-
+        self._model.train()
         self._optimizer.zero_grad()
         out, out16, out32 = self._model(inputs)
         lossp = self._criterion[0](out, teachers)
@@ -35,8 +34,8 @@ class ShelfNet(BaseModel):
     def predict(self, inputs):
         self._model.eval()
         with torch.no_grad():
-            output, _, _ = self._model(inputs)
-            pred_ids = output.cpu().numpy()
+            output = self._model(inputs, aux=False)
+            pred_ids = output.cpu()
         return pred_ids
 
     def save_weight(self, save_path):

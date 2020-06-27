@@ -1,1 +1,2 @@
 from .classification_visualizer import show_image_for_classification
+from .semantic_segmentation_visualizer import SemanticSegmentationVisualizer

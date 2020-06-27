@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from .resnet import Resnet18
-from .ShelfBlock import Decoder, LadderBlock
+from .shelfblock import Decoder, LadderBlock
 
 
 class ConvBNReLU(nn.Module):

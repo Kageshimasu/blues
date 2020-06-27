@@ -61,11 +61,11 @@ class AttentionRefinementModule(nn.Module):
                 if not ly.bias is None: nn.init.constant_(ly.bias, 0)
 
 
-class BasicBlock(nn.Module):
+class SharedWeightResidualBlock(nn.Module):
     expansion = 1
 
     def __init__(self, inplanes, planes, stride=1, rate=1, downsample=None):
-        super(BasicBlock, self).__init__()
+        super(SharedWeightResidualBlock, self).__init__()
         if inplanes != planes:
             self.conv0 = conv3x3(inplanes, planes, rate)
 
@@ -145,26 +145,32 @@ class Bottleneck(nn.Module):
 
 
 class Decoder(nn.Module):
-    def __init__(self, planes, layers, kernel=3, block=BasicBlock):
+    def __init__(self, planes, layers, kernel=3, block=SharedWeightResidualBlock):
         super().__init__()
         self.planes = planes
         self.layers = layers
         self.kernel = kernel
         self.padding = int((kernel - 1) / 2)
         self.inconv = block(planes, planes)
-        # create module for bottom block
         self.bottom = block(planes * (2 ** (layers - 1)), planes * (2 ** (layers - 1)))
 
-        # create module list for up branch
         self.up_conv_list = nn.ModuleList()
         self.up_dense_list = nn.ModuleList()
         for i in range(0, layers - 1):
             self.up_conv_list.append(
-                AttentionRefinementModule(planes * 2 ** (layers - 1 - i), planes * 2 ** max(0, layers - i - 2))
+                AttentionRefinementModule(
+                    planes * 2 ** (layers - 1 - i),
+                    planes * 2 ** max(0, layers - i - 2)
+                )
             )
             self.up_dense_list.append(
-                ConvBNReLU(in_chan=planes * 2 ** max(0, layers - i - 2), out_chan=planes * 2 ** max(0, layers - i - 2),
-                           ks=3, stride=1))
+                ConvBNReLU(
+                    in_chan=planes * 2 ** max(0, layers - i - 2),
+                    out_chan=planes * 2 ** max(0, layers - i - 2),
+                    ks=3,
+                    stride=1
+                )
+            )
 
     def forward(self, x):
         # bottom branch
@@ -177,8 +183,8 @@ class Decoder(nn.Module):
 
         for j in range(0, self.layers - 1):
             out = self.up_conv_list[j](out)
+            # TODO: ここのinterpolate論文のtransと違くない？
             out = F.interpolate(out, (out.size(2) * 2, out.size(3) * 2), mode='nearest') + x[self.layers - j - 2]
-            # out = F.relu(out)
             out = self.up_dense_list[j](out)
             up_out.append(out)
 
@@ -198,7 +204,7 @@ class Decoder(nn.Module):
 
 class LadderBlock(nn.Module):
 
-    def __init__(self, planes, layers, kernel=3, block=BasicBlock):
+    def __init__(self, planes, layers, kernel=3, block=SharedWeightResidualBlock):
         super().__init__()
         self.planes = planes
         self.layers = layers
@@ -241,7 +247,6 @@ class LadderBlock(nn.Module):
             out = out + x[-i - 1]
             out = self.down_module_list[i](out)
             down_out.append(out)
-
             out = self.down_conv_list[i](out)
             out = F.relu(out)
 
@@ -256,7 +261,6 @@ class LadderBlock(nn.Module):
         for j in range(0, self.layers - 1):
             out = self.up_conv_list[j](out)
             out = F.interpolate(out, (out.size(2) * 2, out.size(3) * 2), mode='nearest') + down_out[self.layers - j - 2]
-            # out = F.relu(out)
             out = self.up_dense_list[j](out)
             up_out.append(out)
 
@@ -276,7 +280,7 @@ class LadderBlock(nn.Module):
 
 class Encoder(nn.Module):
 
-    def __init__(self, planes, layers, kernel=3, block=BasicBlock):
+    def __init__(self, planes, layers, kernel=3, block=SharedWeightResidualBlock):
         super().__init__()
         self.planes = planes
         self.layers = layers
@@ -315,7 +319,7 @@ class Encoder(nn.Module):
 
 class Final_LadderBlock(nn.Module):
 
-    def __init__(self, planes, layers, kernel=3, block=BasicBlock, inplanes=3):
+    def __init__(self, planes, layers, kernel=3, block=SharedWeightResidualBlock, inplanes=3):
         super().__init__()
         self.block = LadderBlock(planes, layers, kernel=kernel, block=block)
 

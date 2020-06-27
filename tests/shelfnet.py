@@ -1,6 +1,5 @@
 import blues
 import torch
-import torch.nn as nn
 import pytest
 
 
@@ -17,6 +16,7 @@ def test_segmentation(model):
     net = model(num_classes, batch_size, crop_size)
     x = torch.randn(batch_size, 3, crop_size[0], crop_size[1])
     y = torch.randn(batch_size, num_classes, crop_size[0], crop_size[1])
+    print('test')
     print(net.fit(x, y))
     print(net.predict(x).shape)
 
