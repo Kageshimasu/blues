@@ -21,3 +21,7 @@ class BaseModel(metaclass=ABCMeta):
     @abstractmethod
     def get_model_config(self) -> dict:
         pass
+
+    def callback_per_epoch(self):
+        pass
+

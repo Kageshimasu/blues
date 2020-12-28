@@ -1,17 +1,15 @@
-import cv2
 import numpy as np
-import os
+import cv2
+import torchvision
 
+from typing import List, Callable
 from ..base.base_dataset import BaseDataset
-from ..base.base_data_augmentor import DataAugmentor
-from ..base.base_resizer import BaseResizer
-from ..common.data import Data
 
 
 class ClassificationDataset(BaseDataset):
 
-    def __init__(self, inputs: list, teachers: list, batch_size: int,
-                 resizer: BaseResizer, transformers: list = None, augmentor: DataAugmentor = None):
+    def __init__(self, inputs: List[str], teachers: List[np.ndarray], batch_size: int,
+                 transformers: List[Callable] = None, augmentor: torchvision.transforms.Compose = None):
         """
         :param inputs:
         :param teachers:
@@ -19,24 +17,18 @@ class ClassificationDataset(BaseDataset):
         :param transformers:
         :param augmentor:
         """
-        super().__init__(inputs, teachers, batch_size, resizer, transformers, augmentor)
+        super().__init__(inputs, teachers, batch_size, transformers, augmentor)
 
-    def __next__(self):
-        if self._i >= len(self):
-            self._i = 0
-            raise StopIteration()
-
-        inputs_path = self._inputs[self._i:self._i + self._batch_size]
-        teachers = np.array(self._teachers[self._i:self._i + self._batch_size])
-        inputs, teachers = self._resizer(inputs_path, teachers)
-        file_names = inputs_path
-
-        if self._augmentor is not None:
-            inputs, teachers = self._augmentor(inputs, teachers)
+    def __getitem__(self, i):
+        input_path = self._inputs[i]
+        teacher_data = self._teachers[i]
+        input_data = cv2.imread(input_path)
 
         if self._transformers is not None:
             for transformer in self._transformers:
-                inputs, teachers = transformer(inputs, teachers)
+                input_data, teacher_data = transformer(input_data, teacher_data)
 
-        self._i += self._batch_size
-        return Data(inputs, teachers, file_names)
+        if self._augmentor is not None:
+            input_data = self.transform(image=input_data)["image"]
+
+        return input_data, teacher_data

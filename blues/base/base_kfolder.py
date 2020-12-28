@@ -18,7 +18,6 @@ class BaseKFolder(metaclass=ABCMeta):
         self._inputs = dataset.get_inputs()
         self._teachers = dataset.get_teachers()
         self._batch_size = dataset.get_batch_size()
-        self._resizer = dataset.get_resizer()
         self._transformers = dataset.get_transformers()
         self._augmentor = dataset.get_augmentor()
         self._n_splits = n_splits

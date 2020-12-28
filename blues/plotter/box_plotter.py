@@ -32,6 +32,8 @@ class BoxPlotter(BasePlotter):
         # TODO: モデルごとboxplotの結果を見るのはあり？
         self._grouped_by = grouped_by
         self._fig, self._axes = plt.subplots(1, metric_store.get_num_metrics())
+        if metric_store.get_num_metrics() == 1:
+            self._axes = [self._axes]
 
     def plot(self, save_path: str):
         df_grouped = self._metric_store.get_dict_as_df().groupby(

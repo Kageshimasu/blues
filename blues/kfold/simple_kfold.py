@@ -1,3 +1,5 @@
+import torch
+
 from ..base.base_dataset import BaseDataset
 from ..base.base_kfolder import BaseKFolder
 
@@ -29,10 +31,13 @@ class KFolder(BaseKFolder):
         test_teachers = self._teachers[self._i:self._i + self._n_samples]
 
         train_dataset = self._dataset_class(
-            train_inputs, train_teachers, self._batch_size, self._resizer, self._transformers, self._augmentor)
+            train_inputs, train_teachers, self._batch_size, self._transformers, self._augmentor)
         valid_dataset = self._dataset_class(
-            test_inputs, test_teachers, self._batch_size, self._resizer, self._transformers, None)
+            test_inputs, test_teachers, self._batch_size, self._transformers, None)
+
+        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=self._batch_size, shuffle=True)
+        valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=self._batch_size, shuffle=True)
 
         self._i += self._n_samples
         self._k += 1
-        return train_dataset, valid_dataset
+        return train_loader, valid_loader

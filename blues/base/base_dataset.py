@@ -1,15 +1,20 @@
 import numpy as np
+import torch
+import torchvision
+
 from typing import List, Callable
-from abc import ABCMeta, abstractmethod
-from ..common.data import Data
-from .base_data_augmentor import DataAugmentor
-from .base_resizer import BaseResizer
+from abc import abstractmethod
+from ..base.base_data_augmentor import DataAugmentor
 
 
-class BaseDataset(metaclass=ABCMeta):
+class BaseDataset(torch.utils.data.Dataset):
 
-    def __init__(self, inputs: List[str], teachers: List[np.ndarray or str], batch_size: int,
-                 resizer: BaseResizer = None, transformers: List[Callable] = [], augmentor: DataAugmentor = None):
+    def __init__(
+            self, inputs: List[str],
+            teachers: List[np.ndarray or str],
+            batch_size: int,
+            transformers: List[Callable],
+            augmentor: torchvision.transforms.Compose):
         """
         :param inputs: image path list
         :param teachers: ndarray list
@@ -18,41 +23,32 @@ class BaseDataset(metaclass=ABCMeta):
         :param augmentor:
         """
         if len(inputs) != len(teachers):
-            raise ValueError('the number of the inputs and that of the teachers did not match')
-        if len(inputs) < batch_size:
-            raise ValueError('the batch size is too large for the number of the inputs')
+            raise ValueError('the number of the inputs and that of the teachers did not match,'
+                             'length of inputs is {}, length of teachers is {}'.format(len(inputs), len(teachers)))
         self._inputs = inputs
         self._teachers = teachers
         self._batch_size = batch_size
-        self._resizer = resizer
         self._transformers = transformers
         self._augmentor = augmentor
-        self._i = 0
 
     @abstractmethod
-    def __next__(self) -> Data:
+    def __getitem__(self, i) -> np.ndarray:
         pass
 
     def __len__(self):
         return len(self._inputs)
 
-    def __iter__(self):
-        return self
-
-    def get_inputs(self) -> List[str]:
-        return self._inputs
-
-    def get_teachers(self) -> List[np.ndarray or str]:
-        return self._teachers
-
-    def get_batch_size(self) -> int:
+    def get_batch_size(self):
         return self._batch_size
 
-    def get_resizer(self) -> BaseResizer:
-        return self._resizer
+    def get_inputs(self):
+        return self._inputs
 
-    def get_transformers(self) -> List[Callable]:
+    def get_teachers(self):
+        return self._teachers
+
+    def get_transformers(self):
         return self._transformers
 
-    def get_augmentor(self) -> DataAugmentor:
+    def get_augmentor(self):
         return self._augmentor
