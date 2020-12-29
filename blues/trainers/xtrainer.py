@@ -102,7 +102,6 @@ class XTrainer(BaseTrainer):
                             METRIC=current_metric_dict
                         ))
                         iter_bar.update(1)
-                        break
                 eval_metrics_dict = {}
                 valid_metrics_mean_dict = {'none': 0}
 
@@ -127,7 +126,6 @@ class XTrainer(BaseTrainer):
                     print('TRAIN MEAN METRIC: {}'.format(train_metrics_mean_dict))
                     print('VALID MEAN METRIC: {}\n'.format(valid_metrics_mean_dict))
                     self._metric_store.append(model_name, k, epoch, train_metrics_mean_dict, valid_metrics_mean_dict)
-
 
                 models[k].save_weight(
                     os.path.join(fold_path, 'epoch_{}_metric_{}.pth'.format(

@@ -26,7 +26,7 @@ class ClassificationDataset(BaseDataset):
 
         if self._transformers is not None:
             for transformer in self._transformers:
-                input_data, teacher_data = transformer(input_data, teacher_data)
+                input_data, teacher_data = transformer(i, input_data, teacher_data)
 
         if self._augmentor is not None:
             input_data = self.transform(image=input_data)["image"]

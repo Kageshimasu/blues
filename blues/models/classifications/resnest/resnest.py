@@ -7,7 +7,7 @@ from ....base.base_model import BaseModel
 
 class ResNest(BaseModel):
 
-    def __init__(self, num_classes, layer=50, pretrained=True, channel=3, is_sigmoid=True):
+    def __init__(self, num_classes, layer=50, pretrained=True, channel=1, is_sigmoid=True):
         super().__init__()
         if layer not in [50, 101, 200]:
             raise ValueError('Layer must be 50 or 101 or 200')
